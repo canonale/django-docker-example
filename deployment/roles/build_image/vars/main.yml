@@ -1,0 +1,5 @@
+---
+dockerfile_template: Dockerfile.j2
+dockerfile_dist: ../app/Dockerfile
+template_path: templates
+docker_libs: docker==4.4.4

@@ -1,0 +1,30 @@
+FROM {{ base_image }}:{{ base_image_version }}
+ENV DJANGO_SETTINGS_MODULE {{ default_django_module }}
+ARG version
+
+COPY {{ requirements_file }} {{ work_dir }}
+WORKDIR {{ work_dir }}
+
+RUN set -e \
+{% if dependencies | default(false) and dependencies|length > 0 %}
+  && apk add --no-cache --update {{ dependencies | join(' ') }} \
+{% endif %}
+{% if build_dependencies | default(false) and build_dependencies|length > 0 %}
+  && apk add --no-cache --virtual .build-deps {{ build_dependencies | join(' ') }} \
+{% endif %}
+  && pip install -r {{ requirements_file }} \
+{% if build_dependencies | default(false) and build_dependencies|length > 0 %}
+  && apk del .build-deps \
+{% endif %}
+  && rm -rf /root/.cache/pip \
+  && rm -f {{ requirements_file }} \
+  && echo "${version}" | gzip -f > version.gz
+
+EXPOSE {{ expose_port | default(8000) }}
+
+COPY . {{ work_dir }}
+RUN rm -f {{ requirements_file }} \
+  && mkdir -p files/static \
+  && chown nobody:nobody -R {{ work_dir }}
+
+CMD [ "{{ CMD | default([]) | join('", "') }}" ]

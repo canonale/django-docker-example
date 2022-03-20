@@ -1,0 +1,23 @@
+base_image: python
+base_image_version: 3.8-alpine
+default_django_module: example.settings
+requirements_file: requirements.txt
+image_name: django_dconf
+image_name_version: v1.0
+work_dir: /app/
+expose_port: 8000
+dependencies:
+  - postgresql-libs
+  - libmagic
+build_dependencies:
+  - gcc
+  - libc-dev
+  - linux-headers
+  - libressl
+  - postgresql-dev
+  - libffi
+CMD:
+  - python
+  - manage.py
+  - runserver
+  - "0.0.0.0:8000"

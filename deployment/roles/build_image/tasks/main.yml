@@ -1,0 +1,19 @@
+- name: Prepare the docker file
+  ansible.builtin.template:
+    src: "./{{ template_path }}/{{ dockerfile_template }}"
+    dest: "{{ dockerfile_dist }}"
+  tags: ['main', 'dockerfile', 'template']
+- name: Install docker libs
+  pip:
+    name: "{{ docker_libs }}"
+  tags: ['main', 'pip', 'install', 'docker']
+- name: Tag and push to local registry
+  community.docker.docker_image:
+    name: "{{ image_name }}"
+    repository: localhost:5000/centos
+    tag: "{{ image_name_version }}"
+    push: no
+    source: build
+    build:
+      path: ../app
+  tags: ['main', 'docker', 'build']
