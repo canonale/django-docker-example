@@ -10,7 +10,13 @@ https://docs.djangoproject.com/en/1.11/howto/deployment/wsgi/
 import os
 
 from django.core.wsgi import get_wsgi_application
+from django.core.management import call_command
+from django.conf import settings
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "example.settings")
 
 application = get_wsgi_application()
+
+if not settings.DEBUG:
+    print('*** Starting up...')
+    call_command('bootload')
